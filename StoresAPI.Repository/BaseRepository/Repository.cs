@@ -9,39 +9,69 @@ namespace StoresAPI.Repository.BaseRepository
         private readonly StoresContext _context;
         protected readonly DbSet<T> DbSet;
 
-        public Task<IList<T>> SearchAsync(Expression<Func<T, bool>> predicate)
+        public Repository(StoresContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+            DbSet = _context.Set<T>();
         }
 
-        public Task<T?> GetByIdAsync(uint id)
+        #region Create
+        public async Task<T> AddAsync(T entity)
         {
-            throw new NotImplementedException();
+            await DbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
+
+            return entity;
+        }
+        #endregion
+
+        #region Read
+        public async Task<T?> GetByIdAsync(uint id) =>
+            await DbSet.FindAsync(id);
+
+        public async Task<IList<T>> GetAllAsync() =>
+            await DbSet.ToListAsync();
+
+        public async Task<IList<T>> GetAllAsync(int itensPerPage, int Page) =>
+             await DbSet.Skip(itensPerPage * (Page - 1)).Take(itensPerPage).ToListAsync();
+
+        public async Task<IList<T>> SearchAsync(Expression<Func<T, bool>> predicate) =>
+            await DbSet.AsNoTracking().Where(predicate).ToListAsync();
+        
+        public async Task<IList<T>> SearchAsync(Expression<Func<T, bool>> predicate, int itensPerPage, int Page) =>
+            await DbSet.AsNoTracking().Where(predicate).Skip(itensPerPage * (Page -1)).Take(itensPerPage).ToListAsync();
+
+        public async Task<bool> AnyAsync(uint id) =>
+            await DbSet.AnyAsync(e => e.Id == id);
+        #endregion
+
+        #region Update
+        public async Task<T> UpdateAsync(T entity)
+        {
+            DbSet.Update(entity);
+            await _context.SaveChangesAsync();
+
+            return entity;
         }
 
-        public Task<IList<T>> GetAllAsync()
+        public async void SoftRemoveAsync(uint id)
         {
-            throw new NotImplementedException();
-        }
+            var entity = await DbSet.FindAsync(id);
 
-        public Task<T> AddAsync(T entity)
-        {
-            throw new NotImplementedException();
-        }
+            entity!.IsActive = false;
+            DbSet.Update(entity);
 
-        public T Update(T entity)
-        {
-            throw new NotImplementedException();
+            await _context.SaveChangesAsync();
         }
+        #endregion
 
-        public void Remove(uint id)
+        #region Delete
+        public async Task RemoveAsync(uint id)
         {
-            throw new NotImplementedException();
+            DbSet.Remove(new T { Id = id });
+            await _context.SaveChangesAsync();
         }
+        #endregion
 
-        public Task<bool> AnyAsync(uint id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

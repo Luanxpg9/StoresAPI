@@ -31,7 +31,7 @@
     - [X] Definir o tipo da coluna para Enums
 - [X] Analisar as tabelas no banco
 - [X] Criar o Base Repository
-- [ ] Implementar o Base Repository
+- [X] Implementar o Base Repository
 
 ### Manager
 - [ ] Criar o RoleManager (Permissoes: UserStore)
@@ -47,3 +47,7 @@
 - [ ] Melhorar o readme
 - [ ] Melhorar o dockerfile
 - [ ] Criar um docker compose para inicializar o rabbit, o sql server e a aplicação
+
+---
+### RN:
+- Um Adm Geral pode cadastrar qualquer Usuario/Loja e atribuir qualquer usuario a uma loja
