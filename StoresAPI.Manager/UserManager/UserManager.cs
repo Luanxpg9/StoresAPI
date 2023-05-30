@@ -28,8 +28,7 @@ namespace StoresAPI.Manager.UserManager
             var foundUser = await _userRepository.AnyAsync(u => u.CPF == newUser.CPF.Trim() ||
                 u.Username.ToLower() == newUser.Username.ToLower().Trim());
 
-            if (foundUser)
-                throw new InvalidDataException("User already registered");
+            if (foundUser) throw new InvalidDataException("User already registered");
 
             var user = UserMapper.NewUserDtoToUser(newUser);
             
