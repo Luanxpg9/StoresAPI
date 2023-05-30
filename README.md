@@ -11,6 +11,9 @@ No momento ainda falta muito a ser feito comparado com ao que planejei
 5. Defina o projeto StoresAPI.WebApp como projeto de inicialização
 6. Execute o projeto (F5)
 
+## DB Project
+![StoresAPI drawio](https://github.com/Luanxpg9/StoresAPI/assets/12550348/7b048b18-77b0-4b37-9c99-5207cb2db442)
+
 # IN DEVELOPMENT
 ---
 # TO DO List
