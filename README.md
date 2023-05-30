@@ -9,7 +9,7 @@ No momento ainda falta muito a ser feito comparado com ao que planejei
 3. Altere o projeto padrão no console para StoresAPI.Domain
 4. Execute o comando Update-Database
 5. Defina o projeto StoresAPI.WebApp como projeto de inicialização
-6. Execute o projeto (
+6. Execute o projeto (F5)
 
 # IN DEVELOPMENT
 ---
@@ -54,15 +54,14 @@ No momento ainda falta muito a ser feito comparado com ao que planejei
 
 ---
 ### Para fazer:
+- [ ] Adicionar detalhes no swagger dos controllers ja existentes
 - [ ] Implementar as Sessões
 - [ ] Adicionar autenticação
+- [ ] Implementar as autorizações por rota e por cargo
+- [ ] Adicionar autorização
 - [ ] Implementar a adição de itens por loja
 - [ ] Implementar a venda de itens
 - [ ] Adicionar validação de vendas utilizando um Consumer e Producer com RabbitMQ
 - [ ] Melhorar o readme
 - [ ] Melhorar o dockerfile
 - [ ] Criar um docker compose para inicializar o rabbit, o sql server e a aplicação
-
----
-### RN:
-- Um Adm Geral pode cadastrar qualquer Usuario/Loja e atribuir qualquer usuario a uma loja
