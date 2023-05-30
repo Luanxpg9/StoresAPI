@@ -29,14 +29,8 @@ namespace StoresAPI.Repository.BaseRepository
         public async Task<T?> GetByIdAsync(uint id) =>
             await DbSet.FindAsync(id);
 
-        public async Task<IList<T>> GetAllAsync() =>
-            await DbSet.ToListAsync();
-
         public async Task<IList<T>> GetAllAsync(int itensPerPage, int Page) =>
              await DbSet.Skip(itensPerPage * (Page - 1)).Take(itensPerPage).ToListAsync();
-
-        public async Task<IList<T>> SearchAsync(Expression<Func<T, bool>> predicate) =>
-            await DbSet.AsNoTracking().Where(predicate).ToListAsync();
         
         public async Task<IList<T>> SearchAsync(Expression<Func<T, bool>> predicate, int itensPerPage, int Page) =>
             await DbSet.AsNoTracking().Where(predicate).Skip(itensPerPage * (Page -1)).Take(itensPerPage).ToListAsync();
@@ -52,16 +46,6 @@ namespace StoresAPI.Repository.BaseRepository
             await _context.SaveChangesAsync();
 
             return entity;
-        }
-
-        public async void SoftRemoveAsync(uint id)
-        {
-            var entity = await DbSet.FindAsync(id);
-
-            entity!.IsActive = false;
-            DbSet.Update(entity);
-
-            await _context.SaveChangesAsync();
         }
         #endregion
 

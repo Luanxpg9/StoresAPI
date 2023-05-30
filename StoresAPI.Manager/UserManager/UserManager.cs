@@ -1,6 +1,8 @@
 ﻿using StoresAPI.Domain.Models;
 using StoresAPI.DTO.User;
 using StoresAPI.Repository.BaseRepository;
+using StoresAPI.Repository.Repository.BaseRepository;
+using StoresAPI.Repository.Repository.UserRepository;
 using StoresAPI.Util;
 
 namespace StoresAPI.Manager.UserManager
@@ -8,11 +10,11 @@ namespace StoresAPI.Manager.UserManager
     public class UserManager : IUserManager
     {
         #region Constructor
-        private readonly IRepository<User> _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IRepository<UserStore> _userStoreRepository;
         private readonly IRepository<Store> _storeRepository;
 
-        public UserManager(IRepository<User> userRepository, IRepository<UserStore> userStoreRepository, IRepository<Store> storeRepository)
+        public UserManager(IUserRepository userRepository, IRepository<UserStore> userStoreRepository, IRepository<Store> storeRepository)
         {
             _userRepository = userRepository;
             _userStoreRepository = userStoreRepository;
@@ -23,64 +25,38 @@ namespace StoresAPI.Manager.UserManager
         #region Create
         public async Task<UserDTO> CreateNewUser(NewUserDTO newUser)
         {
-            try
+            // Check if user is already registered
+            var foundUser = await _userRepository.AnyAsync(u => u.CPF == newUser.CPF.Trim() ||
+                u.Username.ToLower() == newUser.Username.ToLower().Trim());
+
+            if (foundUser)
+                throw new InvalidDataException("User already registered");
+
+            var user = UserMapper.NewUserDtoToUser(newUser);
+            
+            // Validators
+            var validator = new UserValidator();
+
+            var result = await validator.ValidateAsync(user);
+
+            if (!result.IsValid)
             {
-                // Check if user is already registered
-                var foundUser = await _userRepository.SearchAsync(
-                    u => u.CPF == newUser.CPF.Trim() || 
-                    u.Username.ToLower() == newUser.Username.ToLower().Trim());
-                
-
-                if (foundUser.Count > 0)
-                {
-                    throw new InvalidDataException("User already registered");
-                }
-
-                var user = new User
-                {
-                    Name = newUser.Name.Trim(),
-                    Username = newUser.Username.Trim().ToLower(),
-                    CPF = newUser.CPF.Trim(),
-                    Password = newUser.Password.Trim(),
-                    IsActive = newUser.IsActive
-                };
-
-                // Validators
-                var validator = new UserValidator();
-
-                var result = await validator.ValidateAsync(user);
-
-                if (!result.IsValid)
-                {
-                    throw new InvalidDataException(result.Errors.First().ErrorMessage);
-                }
-
-                // Hash the password
-                user.Password = MD5Helper.CreateHashMD5(user.Password);
-
-                // Remove special characters from cpf
-                user.CPF = user.CPF.Replace(".", "").Replace("-", "");
-
-                // Register user
-                var registeredUser = await _userRepository.AddAsync(user);
-
-                // Map user to userDTO
-                var userDTO = new UserDTO
-                {
-                    Id = registeredUser.Id,
-                    Name = registeredUser.Name,
-                    Username = registeredUser.Username,
-                    CPF = registeredUser.CPF,
-                    CreationDate = registeredUser.CreatingDate,
-                    IsActive = registeredUser.IsActive
-                };
-
-                return userDTO;
+                throw new InvalidDataException(result.Errors.First().ErrorMessage);
             }
-            catch
-            {
-                throw;
-            }
+
+            // Hash the password
+            user.Password = MD5Helper.CreateHashMD5(user.Password);
+
+            // Remove special characters from cpf
+            user.CPF = Util.Util.RemoveDashesAndDots(user.CPF);
+
+            // Register user
+            var registeredUser = await _userRepository.AddAsync(user);
+
+            // Map user to userDTO
+            var userDTO = UserMapper.UserToUserDTO(registeredUser);
+            
+            return userDTO;
         }
 
         #endregion
@@ -91,28 +67,13 @@ namespace StoresAPI.Manager.UserManager
             try
             {
                 if (String.IsNullOrWhiteSpace(username))
-                {
                     throw new InvalidDataException("Please provide a valid username");
-                }
 
-                var foundUserList = await _userRepository.SearchAsync(u => u.Username.ToLower().Equals(username.ToLower().Trim()));
-                var foundUser = foundUserList.FirstOrDefault();
-
-                if (foundUser == null)
-                {
-                    throw new KeyNotFoundException("Could not find a user with the given username");
-                }
+                var foundUser = await _userRepository.GetByUsername(username.ToLower().Trim())
+                    ?? throw new KeyNotFoundException("Could not find a user with the given username");
 
                 // Map User to UserDTO
-                var userDTO = new UserDTO
-                {
-                    Id = foundUser.Id,
-                    Name = foundUser.Name,
-                    Username = foundUser.Username,
-                    CPF = foundUser.CPF,
-                    CreationDate = foundUser.CreatingDate,
-                    IsActive = foundUser.IsActive
-                };
+                var userDTO = UserMapper.UserToUserDTO(foundUser);
 
                 return userDTO;
             }
@@ -345,11 +306,13 @@ namespace StoresAPI.Manager.UserManager
         }
 
         #endregion
+
+        #region Delete
         public async Task RemoveUser(uint userId)
         {
             // Exclusive for SystemAdm
             await _userRepository.RemoveAsync(userId);
         }
-
+        #endregion
     }
 }

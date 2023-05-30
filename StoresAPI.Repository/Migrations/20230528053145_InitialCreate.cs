@@ -72,6 +72,7 @@ namespace StoresAPI.Repository.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            // Setting index to increase performance
             migrationBuilder.CreateIndex(
                 name: "IX_Stores_CNPJ",
                 table: "Stores",

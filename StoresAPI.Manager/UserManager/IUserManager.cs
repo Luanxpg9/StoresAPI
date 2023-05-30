@@ -10,9 +10,7 @@ namespace StoresAPI.Manager.UserManager
         // Read
         Task<UserDTO> FindUserByUsername(string username);
         Task<UserDTO> GetUserById(uint id);
-        Task<IList<UserDTO>> GetAll();
         Task<IList<UserDTO>> GetAll(int itensPerPage, int Page);
-        Task<IList<UserDTO>> ListUserByStoreId(uint storeId);
         Task<IList<UserDTO>> ListUserByStoreId(uint storeId, int itensPerPage, int Page);
         
         // Update

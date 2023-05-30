@@ -11,9 +11,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoresAPI.Repository", "Sto
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoresAPI.Util", "StoresAPI.Util\StoresAPI.Util.csproj", "{CADA9E92-69CC-493F-897B-CEF1EDEABB88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoresAPI.Manager", "StoresAPI.Manager\StoresAPI.Manager.csproj", "{4EDB0E9E-6867-4B25-9E28-B848D4605D00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoresAPI.Manager", "StoresAPI.Manager\StoresAPI.Manager.csproj", "{4EDB0E9E-6867-4B25-9E28-B848D4605D00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoresAPI.DTO", "StoresAPI.DTO\StoresAPI.DTO.csproj", "{EB337711-D1CD-4442-8549-20534CB35632}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoresAPI.DTO", "StoresAPI.DTO\StoresAPI.DTO.csproj", "{EB337711-D1CD-4442-8549-20534CB35632}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{E48000AD-8D79-45C9-8D3F-8412002ADE5C}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
