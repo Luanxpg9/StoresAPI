@@ -1,7 +1,6 @@
 ﻿using StoresAPI.Domain.Models;
 using StoresAPI.DTO.User;
 using StoresAPI.Repository.BaseRepository;
-using StoresAPI.Repository.Repository.BaseRepository;
 using StoresAPI.Repository.Repository.UserRepository;
 using StoresAPI.Util;
 
@@ -83,33 +82,6 @@ namespace StoresAPI.Manager.UserManager
             }
         }
 
-        public async Task<IList<UserDTO>> GetAll()
-        {
-            var userList = await _userRepository.GetAllAsync();
-
-            if (!userList.Any())
-                throw new Exception("There are no registered users");
-
-            var userListDTO = new List<UserDTO>();
-
-            foreach (var user in userList)
-            {
-                var newUserDTO = new UserDTO
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Username = user.Username,
-                    CPF = user.CPF,
-                    CreationDate = user.CreatingDate,
-                    IsActive = user.IsActive
-                };
-
-                userListDTO.Add(newUserDTO);
-            }
-
-            return userListDTO;
-        }
-
         public async Task<IList<UserDTO>> GetAll(int itensPerPage, int Page)
         {
             var userList = await _userRepository.GetAllAsync(itensPerPage, Page);
@@ -164,8 +136,8 @@ namespace StoresAPI.Manager.UserManager
             if (foundStore == null) throw new KeyNotFoundException("Could not find a store with the given Id");
 
             // Find userStore
-            var foundUserStore = await _userStoreRepository.SearchAsync(us => us.StoreId == storeId);
-            if (foundUserStore.Count == 0) throw new KeyNotFoundException("Could not find any user for the given store");
+            var foundUserStore = await _userStoreRepository.SearchAsync(us => us.StoreId == storeId, 1, 1);
+            if (!foundUserStore.Any()) throw new KeyNotFoundException("Could not find any user for the given store");
 
             var userListDTO = new List<UserDTO>(); 
 
@@ -240,7 +212,7 @@ namespace StoresAPI.Manager.UserManager
             if (!String.IsNullOrWhiteSpace(userUpdate.Username))
             {
                 // Check if there is another user with the new username
-                var invalidUserList = await _userRepository.SearchAsync(u => u.Username.ToLower().Equals(userUpdate.Username.ToLower().Trim()) && u.Id != userUpdate.Id);
+                var invalidUserList = await _userRepository.SearchAsync(u => u.Username.ToLower().Equals(userUpdate.Username.ToLower().Trim()) && u.Id != userUpdate.Id, 1, 1);
                 if (invalidUserList.Any()) throw new InvalidDataException($"User already registered with username {userUpdate.Username}");
 
                 foundUser.Username = userUpdate.Username.Trim();
@@ -248,7 +220,7 @@ namespace StoresAPI.Manager.UserManager
             if (!String.IsNullOrWhiteSpace(userUpdate.CPF))
             {
                 // Check if there is another user with the new CPF
-                var invalidUserList = await _userRepository.SearchAsync(u => u.CPF.Equals(userUpdate.CPF.Trim()) && u.Id != userUpdate.Id);
+                var invalidUserList = await _userRepository.SearchAsync(u => u.CPF.Equals(userUpdate.CPF.Trim()) && u.Id != userUpdate.Id, 1, 1);
                 if (invalidUserList.Any()) throw new InvalidDataException($"User already registered with CPF {userUpdate.CPF}");
 
                 foundUser.CPF = userUpdate.CPF.Trim();

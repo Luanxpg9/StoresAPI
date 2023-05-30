@@ -3,7 +3,7 @@
     public interface IStoreManager
     {
         #region Create
-        Task<StoreDTO> CreateNewStore(NewStoreDTO newStore);
+        //Task<StoreDTO> CreateNewStore(NewStoreDTO newStore);
         #endregion
     }
 }
